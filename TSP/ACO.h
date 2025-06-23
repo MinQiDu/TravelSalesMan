@@ -10,7 +10,7 @@ public :
 	void RunALG(const int &iter, 
 		const double &eva_rate, 
 		const int &weight_pher, 
-		const int &weight_dis);              /*implement ACO*/
+		const int &weight_heu);              /*implement ACO*/
 
 private :
 	int iter;                                /*要執行幾代螞蟻群來決定最佳解*/
@@ -20,7 +20,7 @@ private :
 	int city_num;                            /*city_num according to city_cood*/
 	
 	int weight_pher;                         /*計算機率時的費洛蒙比重*/
-	int weight_dis;                          /*計算機率時的距離比重(greedy)*/
+	int weight_heu;                          /*計算機率時的距離比重(greedy)*/
 	vector<pair<int, int>> city_coordinates; /*city coordinates data*/
 
 	double shortest_dis;                     /*紀錄當前最短距離*/
@@ -37,7 +37,6 @@ private :
 
 	void Init();                             /* 1.create city_coordinates from .txt 2.intitialize heuristic and pheromones record */
 	                                         /*While (iter_count < iter_max)*/
-	vector<double> Cal_possibility(const double &a, const double &b); /*calculate第k隻Ant從節點i移動到節點j的機率*/
 	vector<int> Path_construct(int start_city);                       /*construct a path visiting all cities*/
 	double Cal_dis(const vector<int> &visited_order);                 /*calculate total distance of this path*/
 	void Apply_2_Opt();                      /*Apply local search on specific ants*/
