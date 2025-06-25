@@ -13,7 +13,9 @@ void algo_ACO::RunALG(const int& _iter,
 {
 	srand(time(NULL));
 	iter = _iter;
-	eva_rate = _eva_rate;
+	iter_count = 0;
+	/*dynamic eva_rate*/
+	eva_rate = _eva_rate - (_eva_rate * 0.6) * ((double)iter_count / iter);
 	weight_pher = _weight_pher;
 	weight_heu = _weight_heu;
 	Init();
@@ -117,7 +119,6 @@ void algo_ACO::RunALG(const int& _iter,
    2.intitialize heuristic and pheromones record */
 void algo_ACO::Init()
 {
-	iter_count = 0;
 	city_coordinates = ReadCityCoord("ACO_HW_point.txt"); /*取ACO_HW_point.txt資料存入city_coordinates*/
 	city_num = city_coordinates.size();
 	ants = 50; /*螞蟻數量*/
@@ -338,6 +339,7 @@ void algo_ACO::Update_pheromones()
 	}
 
 	/* 3.額外加上global_path_record中走過的edge的pheromones*/
+	/*
 	for (int i = 0; i < city_num - 1; ++i)
 	{
 		int from = global_shortest_path[i];
@@ -349,6 +351,7 @@ void algo_ACO::Update_pheromones()
 	int to = global_shortest_path[0];
 	pheromones_record[from][to] += Q / global_shortest_dis;
 	pheromones_record[to][from] += Q / global_shortest_dis;
+	*/
 }
 
 /*用 ifstream 來開啟檔案。如果失敗，就輸出錯誤訊息 cerr 並回傳空的 coordinates*/
