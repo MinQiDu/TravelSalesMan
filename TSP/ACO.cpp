@@ -314,7 +314,7 @@ void algo_ACO::Update_pheromones()
 	acc_pheromones = vector<vector<double>>(city_num, vector<double>(city_num, 0.0));
 	
 	/* 1.acc_pheromones : accumulated pheromones level for each edge*/
-	if (iter_count > 500)
+	if (iter_count > iter / 2)
 	{
 		for (int k = 0; k < ants; ++k)
 		{
@@ -332,7 +332,7 @@ void algo_ACO::Update_pheromones()
 			acc_pheromones[to][from] += Q / recent_dis_record[k];
 		}
 	}
-
+	
 	/* 2.new pheromones = pheromones evaporation + add acc_pheromones*/
 	for (int i = 0; i < city_num; ++i)
 	{
@@ -343,20 +343,17 @@ void algo_ACO::Update_pheromones()
 	}
 
 	/* 3.額外加上global_path_record中走過的edge的pheromones*/
-	if (iter_count <= 500)
+	for (int i = 0; i < city_num - 1; ++i)
 	{
-		for (int i = 0; i < city_num - 1; ++i)
-		{
-			int from = global_shortest_path[i];
-			int to = global_shortest_path[i + 1];
-			pheromones_record[from][to] += Q * 5 / global_shortest_dis;
-			pheromones_record[to][from] += Q * 5 / global_shortest_dis;
-		}
-		int from = global_shortest_path.back();
-		int to = global_shortest_path[0];
-		pheromones_record[from][to] += Q * 5 / global_shortest_dis;
-		pheromones_record[to][from] += Q * 5 / global_shortest_dis;
+		int from = global_shortest_path[i];
+		int to = global_shortest_path[i + 1];
+		pheromones_record[from][to] += Q * 2 / global_shortest_dis;
+		pheromones_record[to][from] += Q * 2 / global_shortest_dis;
 	}
+	int from = global_shortest_path.back();
+	int to = global_shortest_path[0];
+	pheromones_record[from][to] += Q * 2 / global_shortest_dis;
+	pheromones_record[to][from] += Q * 2 / global_shortest_dis;
 }
 
 /*用 ifstream 來開啟檔案。如果失敗，就輸出錯誤訊息 cerr 並回傳空的 coordinates*/
