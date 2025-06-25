@@ -26,7 +26,6 @@ void algo_ACO::RunALG(const int& _iter,
 		/*每一世代重新設定初始狀態*/
 		recent_dis_record = vector<double>(ants, 0.0);
 		recent_path_record = vector<vector<int>>(ants, vector<int>(city_num, -1));
-		next_pheromones = vector<vector<double>>(city_num, vector<double>(city_num, 0.0));
 
 		for (int k = 0; k < ants; ++k) /*each ants do*/
 		{
@@ -48,16 +47,6 @@ void algo_ACO::RunALG(const int& _iter,
 		int top_n = ants / 4;
 		Apply_2_Opt(top_n); /*update shortest_dis / path & recent_dis / path record */
 		
-		/*update accumulated pheromones level for each edge*/
-		for (int k = 0; k < ants; ++k)
-		{
-			for (int i = 0; i < city_num - 1; ++i) /*add ants k 於有經過的Edge(from, to)上留下的費洛蒙*/
-			{
-				int from = recent_path_record[k][i];
-				int to = recent_path_record[k][i + 1];
-				next_pheromones[from][to] += Q / recent_dis_record[k];
-			}
-		}
 		Update_pheromones();
 		
 		iter_count++;
@@ -345,15 +334,31 @@ void algo_ACO::Apply_2_Opt(const int &top_n)
 /*update pheromones level of each edge(i, j)*/
 void algo_ACO::Update_pheromones()
 {
+	next_pheromones = vector<vector<double>>(city_num, vector<double>(city_num, 0.0));
+	
+	/*next_pheromones : accumulated pheromones level for each edge*/
+	for (int k = 0; k < ants; ++k)
+	{
+		for (int i = 0; i < city_num - 1; ++i) /*add ants k 於有經過的Edge(from, to)上留下的費洛蒙*/
+		{
+			int from = recent_path_record[k][i];
+			int to = recent_path_record[k][i + 1];
+			next_pheromones[from][to] += Q / recent_dis_record[k];
+			next_pheromones[to][from] += Q / recent_dis_record[k];
+		}
+		/*補上回原點的edge的pheromone累積*/
+		int from = recent_path_record[k].back();
+		int to = recent_path_record[k][0];
+		next_pheromones[from][to] += Q / recent_dis_record[k];
+		next_pheromones[to][from] += Q / recent_dis_record[k];
+	}
+
 	for (int i = 0; i < city_num; ++i)
 	{
 		for (int j = 0; j < city_num; ++j)
 		{
 			pheromones_record[i][j] = (1 - eva_rate) * pheromones_record[i][j] + next_pheromones[i][j];
-			/*debug*/
-			//cout << pheromones_record[i][j] << " ";
 		}
-		//cout << endl;
 	}
 }
 
