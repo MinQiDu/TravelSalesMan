@@ -34,17 +34,18 @@ void algo_ACO::RunALG(const int& _iter,
 			vector<int> path_k = Path_construct(rd_start);
 			recent_path_record[k] = path_k;
 			recent_dis_record[k] = Cal_dis(recent_path_record[k]);
-
-			/*update shortest dis and path*/
-			if (*min_element(recent_dis_record.begin(), recent_dis_record.end()) < shortest_dis)
-			{
-				int shortest_id = min_element(recent_dis_record.begin(), recent_dis_record.end()) - recent_dis_record.begin();
-				shortest_dis = recent_dis_record[shortest_id];
-				shortest_path = recent_path_record[shortest_id];
-			}
 		}
-		/*從recent_dis選最短dis的五隻ants做local search*/
-		int top_n = 5;
+
+		/*after all ants finished their path，update shortest dis and path*/
+		if (*min_element(recent_dis_record.begin(), recent_dis_record.end()) < shortest_dis)
+		{
+			int shortest_id = min_element(recent_dis_record.begin(), recent_dis_record.end()) - recent_dis_record.begin();
+			shortest_dis = recent_dis_record[shortest_id];
+			shortest_path = recent_path_record[shortest_id];
+		}
+
+		/*從recent_dis選最短dis前25%ants做local search*/
+		int top_n = ants / 4;
 		Apply_2_Opt(top_n); /*update shortest_dis / path & recent_dis / path record */
 		
 		/*update accumulated pheromones level for each edge*/
@@ -61,13 +62,13 @@ void algo_ACO::RunALG(const int& _iter,
 		
 		iter_count++;
 		
-		cout << "iter" << iter_count << "shortest_dis = " << shortest_dis << endl;
+		cout << "iter" << iter_count << "_shortest_dis = " << shortest_dis << endl;
 		/*push in for record output*/
 		all_iter_shortest_dis.push_back(shortest_dis);
 	}
 
 	/*create dis_result.txt*/
-	ofstream file("dis_result_TSP_ACO_total" + to_string(iter) + "iter_evaporate" + to_string(eva_rate) + "_pher" + to_string(weight_pher) + "_heu" + to_string(weight_heu) + ".txt");
+	ofstream file("dis_result_TSP_ACO_total" + to_string(iter) + "iter_evaporate" + to_string(static_cast<int>(eva_rate * 10)) + "_pher" + to_string(weight_pher) + "_heu" + to_string(weight_heu) + ".txt");
 	for (int i = 0; i < iter; ++i)
 	{
 		file << i + 1 << " " << all_iter_shortest_dis[i] << "\n";
@@ -75,19 +76,19 @@ void algo_ACO::RunALG(const int& _iter,
 	file.close();
 
 	/*create .plt for generating plot*/
-	ofstream plot("plot_ACO_dist.plt");
+	ofstream plot("plot_ACO_dis.plt");
 	plot << "set terminal png size 800, 600\n";
-	plot << "set output 'dis_result_TSP_ACO_total" << iter << "iter_evaporate" << eva_rate << "_pher" << weight_pher << "_heu" << weight_heu << ".png'\n";
+	plot << "set output 'dis_result_TSP_ACO_total" << iter << "iter_evaporate" << static_cast<int>(eva_rate * 10) << "_pher" << weight_pher << "_heu" << weight_heu << ".png'\n";
 	plot << "set title 'Convergence with ACO on TravelSalesMan'\n";
 	plot << "set xlabel 'Iteration Times'\n";
 	plot << "set ylabel 'Shortest Distance'\n";
 	plot << "set xrange [0:" << iter << "]\n";
-	plot << "set yrange [0:1000]\n";
-	plot << "plot 'dis_result_TSP_ACO_total" << iter << "iter_evaporate" << eva_rate << "_pher" << weight_pher << "_heu" << weight_heu << ".txt' using 1:2 with lines title 'with ACO'";
+	plot << "set yrange [0:600]\n";
+	plot << "plot 'dis_result_TSP_ACO_total" << iter << "iter_evaporate" << static_cast<int>(eva_rate * 10) << "_pher" << weight_pher << "_heu" << weight_heu << ".txt' using 1:2 with lines title 'with ACO'";
 	plot.close();
 
 	/*create path_result.txt*/
-	ofstream file_path("path_result_TSP_ACO_total" + to_string(iter) + "iter_evaporate" + to_string(eva_rate) + "_pher" + to_string(weight_pher) + "_heu" + to_string(weight_heu) + ".txt");
+	ofstream file_path("path_result_TSP_ACO_total" + to_string(iter) + "iter_evaporate" + to_string(static_cast<int>(eva_rate*10)) + "_pher" + to_string(weight_pher) + "_heu" + to_string(weight_heu) + ".txt");
 	for (int city : shortest_path)
 	{
 		int x = city_coordinates[city].first;
@@ -102,13 +103,15 @@ void algo_ACO::RunALG(const int& _iter,
 	/*create .plt for generating plot*/
 	ofstream plot_path("plot_ACO_path.plt");
 	plot_path << "set terminal png size 800, 600\n";
+	plot_path << "set output 'path_result_TSP_ACO_total" << iter << "iter_evaporate" << static_cast<int>(eva_rate * 10) << "_pher" << weight_pher << "_heu" << weight_heu << ".png'\n";
 	plot_path << "set title 'TravelSalesMan Shortest Path with ACO'\n";
+	plot_path << "set label 'Distance = " << shortest_dis << "' at graph 0.35, 0.95 tc rgb 'black' front\n";
 	plot_path << "set size square\n";
-	plot_path << "set xrange [0:80]\n";
+	plot_path << "set xrange [0:70]\n";
 	plot_path << "set yrange [0:80]\n";
 	plot_path << "set key off\n";
 	plot_path << "set grid\n";
-	plot_path << "plot 'path_result_TSP_ACO_total" << iter << "iter_evaporate" << eva_rate << "_pher" << weight_pher << "_heu" << weight_heu << ".txt' with linespoints lt rgb 'purple' pt 7 ps 1.2\n";
+	plot_path << "plot 'path_result_TSP_ACO_total" << iter << "iter_evaporate" << static_cast<int>(eva_rate * 10) << "_pher" << weight_pher << "_heu" << weight_heu << ".txt' with linespoints lt rgb 'purple' pt 7 ps 1.2\n";
 	plot_path.close();
 }
 
@@ -119,7 +122,7 @@ void algo_ACO::Init()
 	iter_count = 0;
 	city_coordinates = ReadCityCoord("ACO_HW_point.txt"); /*取ACO_HW_point.txt資料存入city_coordinates*/
 	city_num = city_coordinates.size();
-	ants = 30; /*螞蟻數量*/
+	ants = 50; /*螞蟻數量*/
 	Q = 100;   /*用來計算pheromones level = Q / dis*/
 	
 	/*Initialization for pheromones = 1.0 and heuristic record = 0.0*/
@@ -144,11 +147,28 @@ void algo_ACO::Init()
 			{
 				double dist_ij = Cal_edge(i, j);
 				heuristic_record[i][j] = 1.0 / dist_ij;
+				/*debug*/
+				//cout << heuristic_record[i][j] << " ";
 			}
 		}
 	}
-	cout << "city_num: " << city_coordinates.size() << "| ants_num: " << ants << "| eva_rate: " << eva_rate << endl;
-	cout << "weight_pher: " << weight_pher << "| weight_heu: " << weight_heu << endl;
+	cout << "city_num: " << city_coordinates.size() << " | ants_num: " << ants << " | eva_rate: " << eva_rate << " | weight_pher: " << weight_pher << " | weight_heu: " << weight_heu << endl;
+	
+	/*debug*/
+	/*
+	for (int v = 0; v < city_num; ++v)
+	{
+		
+		cout << city_coordinates[v].first << " " << city_coordinates[v].second << " | ";
+		cout << shortest_path[v] << " ";
+	
+	}
+	cout << endl;
+	
+	cout << city_coordinates.size() << endl;
+	cout << shortest_dis << endl;
+	*/
+	
 }
 
 vector<int> algo_ACO::Path_construct(int start_city)
@@ -202,6 +222,14 @@ vector<int> algo_ACO::Path_construct(int start_city)
 		
 		/*update start city for next run*/
 		start_city = next_city;
+
+		/*debug*/
+		/*
+		//for (int city : allowed_k)
+		for (int city : path_k)
+			cout << city << " ";
+		cout << endl;
+		*/
 	}
 	return path_k;
 }
@@ -242,7 +270,16 @@ vector<int> algo_ACO::SelectTopIdx(const vector<double>& recent_dis_record, cons
 	{
 		top_n_idx.push_back(dis_idx[n].second);
 	}
+	/*debug*/
+	/*
+	for (int idx : top_n_idx)
+		cout << idx << " ";
+	cout << endl;
 
+	for (int i = 0; i < city_num; ++i)
+		cout << dis_idx[i].first << " " << dis_idx[i].second << " ";
+	cout << endl;
+	*/
 	return top_n_idx;
 }
 
@@ -274,6 +311,19 @@ void algo_ACO::Apply_2_Opt(const int &top_n)
 				}
 			}
 		}
+		/*debug*/
+		/*
+		cout << "old path: ";
+		for (int city : recent_path_record[idx])
+			cout << city << " ";
+		cout << "-> old dis: " << recent_dis_record[idx] << endl;
+
+		cout << "new path: ";
+		for (int city : opt_path)
+			cout << city << " ";
+		cout << "-> new dis: " << Cal_dis(opt_path) << endl;
+		*/
+
 		/*after opt all edges of ant idx, update to opt_path*/
 		recent_path_record[idx] = opt_path;
 	}
@@ -300,7 +350,10 @@ void algo_ACO::Update_pheromones()
 		for (int j = 0; j < city_num; ++j)
 		{
 			pheromones_record[i][j] = (1 - eva_rate) * pheromones_record[i][j] + next_pheromones[i][j];
+			/*debug*/
+			//cout << pheromones_record[i][j] << " ";
 		}
+		//cout << endl;
 	}
 }
 
