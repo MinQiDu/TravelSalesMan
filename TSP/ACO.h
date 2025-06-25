@@ -26,13 +26,15 @@ private :
 
 	double shortest_dis;                     /*紀錄當前最短距離*/
 	vector<int> shortest_path;               /*紀錄當前最短路徑*/
+	double global_shortest_dis;              /*橫跨所有iter的最短dis紀錄*/
+	vector<int> global_shortest_path;        /*橫跨所有iter的最短path紀錄*/
 
 	vector<double> recent_dis_record;        /*distance record of this iter*/
 	vector<vector<int>> recent_path_record;  /*path record of this iter*/
 
 	vector<vector<double>> heuristic_record; /*heu(ij) : 每段ij的1/distance(i,j)*/
 	vector<vector<double>> pheromones_record;/*phe(ij) : 每段ij的pheromones level*/
-	vector<vector<double>> next_pheromones;  /*sum all ants' path[i,j] pheromones level for next iter*/
+	vector<vector<double>> acc_pheromones;   /*accumulate all ants' edge[i,j] & edge[j,i] pheromones level for next iter*/
 
 
 	void Init();                                                                         /* 1.create city_coordinates from .txt 2.intitialize heuristic and pheromones record */

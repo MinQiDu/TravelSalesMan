@@ -18,6 +18,15 @@ void algo_ACO::RunALG(const int& _iter,
 	weight_heu = _weight_heu;
 	Init();
 
+	/*Initializeation for global_shortest_path and global_shortest_dis*/
+	vector<int> init_path(city_num);
+	for (int i = 0; i < city_num; ++i)
+	{
+		init_path[i] = i;
+	}
+	global_shortest_path = init_path;
+	global_shortest_dis = Cal_dis(init_path);
+
 	/*for record output*/
 	vector<double> all_iter_shortest_dis;
 
@@ -136,28 +145,10 @@ void algo_ACO::Init()
 			{
 				double dist_ij = Cal_edge(i, j);
 				heuristic_record[i][j] = 1.0 / dist_ij;
-				/*debug*/
-				//cout << heuristic_record[i][j] << " ";
 			}
 		}
 	}
 	cout << "city_num: " << city_coordinates.size() << " | ants_num: " << ants << " | eva_rate: " << eva_rate << " | weight_pher: " << weight_pher << " | weight_heu: " << weight_heu << endl;
-	
-	/*debug*/
-	/*
-	for (int v = 0; v < city_num; ++v)
-	{
-		
-		cout << city_coordinates[v].first << " " << city_coordinates[v].second << " | ";
-		cout << shortest_path[v] << " ";
-	
-	}
-	cout << endl;
-	
-	cout << city_coordinates.size() << endl;
-	cout << shortest_dis << endl;
-	*/
-	
 }
 
 vector<int> algo_ACO::Path_construct(int start_city)
@@ -211,14 +202,6 @@ vector<int> algo_ACO::Path_construct(int start_city)
 		
 		/*update start city for next run*/
 		start_city = next_city;
-
-		/*debug*/
-		/*
-		//for (int city : allowed_k)
-		for (int city : path_k)
-			cout << city << " ";
-		cout << endl;
-		*/
 	}
 	return path_k;
 }
@@ -300,28 +283,13 @@ void algo_ACO::Apply_2_Opt(const int &top_n)
 				}
 			}
 		}
-		/*debug*/
-		/*
-		cout << "old path: ";
-		for (int city : recent_path_record[idx])
-			cout << city << " ";
-		cout << "-> old dis: " << recent_dis_record[idx] << endl;
-
-		cout << "new path: ";
-		for (int city : opt_path)
-			cout << city << " ";
-		cout << "-> new dis: " << Cal_dis(opt_path) << endl;
-		*/
-
-		/*after opt all edges of ant idx, update to opt_path*/
+		/*update recent_dis& path record*/
 		recent_path_record[idx] = opt_path;
+		recent_dis_record[idx] = Cal_dis(opt_path);
 	}
-	/*after opt all top n path
-	1.calculate dis for all opt path 
-	2.update recent_dis & path record*/
+	/*after opt all top n path, update shortest_dis & path*/
 	for (int idx : top_n_idx)
 	{
-		recent_dis_record[idx] = Cal_dis(recent_path_record[idx]);
 		if (recent_dis_record[idx] < shortest_dis)
 		{
 			shortest_dis = recent_dis_record[idx];
@@ -329,37 +297,58 @@ void algo_ACO::Apply_2_Opt(const int &top_n)
 		}
 	}
 
+	/*update global_shortest_dis & global_shortest_path*/
+	if (shortest_dis < global_shortest_dis)
+	{
+		global_shortest_dis = shortest_dis;
+		global_shortest_path = shortest_path;
+	}
+
 }
 
 /*update pheromones level of each edge(i, j)*/
 void algo_ACO::Update_pheromones()
 {
-	next_pheromones = vector<vector<double>>(city_num, vector<double>(city_num, 0.0));
+	acc_pheromones = vector<vector<double>>(city_num, vector<double>(city_num, 0.0));
 	
-	/*next_pheromones : accumulated pheromones level for each edge*/
+	/* 1.acc_pheromones : accumulated pheromones level for each edge*/
 	for (int k = 0; k < ants; ++k)
 	{
 		for (int i = 0; i < city_num - 1; ++i) /*add ants k 於有經過的Edge(from, to)上留下的費洛蒙*/
 		{
 			int from = recent_path_record[k][i];
 			int to = recent_path_record[k][i + 1];
-			next_pheromones[from][to] += Q / recent_dis_record[k];
-			next_pheromones[to][from] += Q / recent_dis_record[k];
+			acc_pheromones[from][to] += Q / recent_dis_record[k];
+			acc_pheromones[to][from] += Q / recent_dis_record[k];
 		}
 		/*補上回原點的edge的pheromone累積*/
 		int from = recent_path_record[k].back();
 		int to = recent_path_record[k][0];
-		next_pheromones[from][to] += Q / recent_dis_record[k];
-		next_pheromones[to][from] += Q / recent_dis_record[k];
+		acc_pheromones[from][to] += Q / recent_dis_record[k];
+		acc_pheromones[to][from] += Q / recent_dis_record[k];
 	}
 
+	/* 2.new pheromones = pheromones evaporation + add acc_pheromones*/
 	for (int i = 0; i < city_num; ++i)
 	{
 		for (int j = 0; j < city_num; ++j)
 		{
-			pheromones_record[i][j] = (1 - eva_rate) * pheromones_record[i][j] + next_pheromones[i][j];
+			pheromones_record[i][j] = (1 - eva_rate) * pheromones_record[i][j] + acc_pheromones[i][j];
 		}
 	}
+
+	/* 3.額外加上global_path_record中走過的edge的pheromones*/
+	for (int i = 0; i < city_num - 1; ++i)
+	{
+		int from = global_shortest_path[i];
+		int to = global_shortest_path[i + 1];
+		pheromones_record[from][to] += Q / global_shortest_dis;
+		pheromones_record[to][from] += Q / global_shortest_dis;
+	}
+	int from = global_shortest_path.back();
+	int to = global_shortest_path[0];
+	pheromones_record[from][to] += Q / global_shortest_dis;
+	pheromones_record[to][from] += Q / global_shortest_dis;
 }
 
 /*用 ifstream 來開啟檔案。如果失敗，就輸出錯誤訊息 cerr 並回傳空的 coordinates*/
