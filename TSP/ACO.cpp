@@ -14,8 +14,7 @@ void algo_ACO::RunALG(const int& _iter,
 	srand(time(NULL));
 	iter = _iter;
 	iter_count = 0;
-	/*dynamic eva_rate*/
-	eva_rate = _eva_rate - (_eva_rate * 0.6) * ((double)iter_count / iter);
+	eva_rate = _eva_rate;
 	weight_pher = _weight_pher;
 	weight_heu = _weight_heu;
 	Init();
@@ -35,6 +34,8 @@ void algo_ACO::RunALG(const int& _iter,
 	while (iter_count < iter) /*在世代iter次數尚未達標前*/
 	{
 		/*每一世代重新設定初始狀態*/
+		/*dynamic eva_rate*/
+		eva_rate = eva_rate - (eva_rate * 0.85) * ((double)iter_count / iter);
 		recent_dis_record = vector<double>(ants, 0.0);
 		recent_path_record = vector<vector<int>>(ants, vector<int>(city_num, -1));
 
@@ -121,7 +122,7 @@ void algo_ACO::Init()
 {
 	city_coordinates = ReadCityCoord("ACO_HW_point.txt"); /*取ACO_HW_point.txt資料存入city_coordinates*/
 	city_num = city_coordinates.size();
-	ants = 50; /*螞蟻數量*/
+	ants = 60; /*螞蟻數量*/
 	Q = 100;   /*用來計算pheromones level = Q / dis*/
 	
 	/*Initialization for pheromones = 1.0 and heuristic record = 0.0*/
@@ -313,20 +314,23 @@ void algo_ACO::Update_pheromones()
 	acc_pheromones = vector<vector<double>>(city_num, vector<double>(city_num, 0.0));
 	
 	/* 1.acc_pheromones : accumulated pheromones level for each edge*/
-	for (int k = 0; k < ants; ++k)
+	if (iter_count > 500)
 	{
-		for (int i = 0; i < city_num - 1; ++i) /*add ants k 於有經過的Edge(from, to)上留下的費洛蒙*/
+		for (int k = 0; k < ants; ++k)
 		{
-			int from = recent_path_record[k][i];
-			int to = recent_path_record[k][i + 1];
+			for (int i = 0; i < city_num - 1; ++i) //add ants k 於有經過的Edge(from, to)上留下的費洛蒙
+			{
+				int from = recent_path_record[k][i];
+				int to = recent_path_record[k][i + 1];
+				acc_pheromones[from][to] += Q / recent_dis_record[k];
+				acc_pheromones[to][from] += Q / recent_dis_record[k];
+			}
+			//補上回原點的edge的pheromone累積
+			int from = recent_path_record[k].back();
+			int to = recent_path_record[k][0];
 			acc_pheromones[from][to] += Q / recent_dis_record[k];
 			acc_pheromones[to][from] += Q / recent_dis_record[k];
 		}
-		/*補上回原點的edge的pheromone累積*/
-		int from = recent_path_record[k].back();
-		int to = recent_path_record[k][0];
-		acc_pheromones[from][to] += Q / recent_dis_record[k];
-		acc_pheromones[to][from] += Q / recent_dis_record[k];
 	}
 
 	/* 2.new pheromones = pheromones evaporation + add acc_pheromones*/
@@ -339,19 +343,20 @@ void algo_ACO::Update_pheromones()
 	}
 
 	/* 3.額外加上global_path_record中走過的edge的pheromones*/
-	/*
-	for (int i = 0; i < city_num - 1; ++i)
+	if (iter_count <= 500)
 	{
-		int from = global_shortest_path[i];
-		int to = global_shortest_path[i + 1];
-		pheromones_record[from][to] += Q / global_shortest_dis;
-		pheromones_record[to][from] += Q / global_shortest_dis;
+		for (int i = 0; i < city_num - 1; ++i)
+		{
+			int from = global_shortest_path[i];
+			int to = global_shortest_path[i + 1];
+			pheromones_record[from][to] += Q * 5 / global_shortest_dis;
+			pheromones_record[to][from] += Q * 5 / global_shortest_dis;
+		}
+		int from = global_shortest_path.back();
+		int to = global_shortest_path[0];
+		pheromones_record[from][to] += Q * 5 / global_shortest_dis;
+		pheromones_record[to][from] += Q * 5 / global_shortest_dis;
 	}
-	int from = global_shortest_path.back();
-	int to = global_shortest_path[0];
-	pheromones_record[from][to] += Q / global_shortest_dis;
-	pheromones_record[to][from] += Q / global_shortest_dis;
-	*/
 }
 
 /*用 ifstream 來開啟檔案。如果失敗，就輸出錯誤訊息 cerr 並回傳空的 coordinates*/
