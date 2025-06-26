@@ -64,7 +64,8 @@ g++ main.cpp TSP.cpp ACO.cpp -o TSP.exe
 
 1. 在 Windows cmd 或 PowerShell 中
 2. 先到正確資料夾路徑
-3. 輸入 :   
+3. 將 ACO_HW_point.txt 放入執行檔所在資料夾
+4. 輸入 :   
 .\TSP.exe iter eva_rate weight_pher weight_heu 
 eg. 
 .\TSP.exe 1000 0.7 1 3
