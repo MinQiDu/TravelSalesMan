@@ -46,7 +46,7 @@ private :
 	void Apply_2_Opt(const int &top_n);                                                  /*Apply local search on top n ants*/
 	                                                                                     /*and update shortest_path and shortes_dis*/
 	void Update_pheromones();                                                            /*update pheromones level for next iter*/
-	vector<pair<int, int>> ReadCityCoord(const string& filename);
+	vector<pair<int, int>> ReadCityCoord(const string& filename);                        /*transfer city_coord.txt -> city_coord vector {{x1, y1}, {x2, y2}, ...}*/
 };
 
 #endif
