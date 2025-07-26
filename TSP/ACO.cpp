@@ -15,6 +15,7 @@ void algo_ACO::RunALG(const int& _iter,
 	iter = _iter;
 	iter_count = 0;
 	eva_rate = _eva_rate;
+	int org_eva_rate = eva_rate * 10;
 	weight_pher = _weight_pher;
 	weight_heu = _weight_heu;
 	Init();
@@ -34,7 +35,7 @@ void algo_ACO::RunALG(const int& _iter,
 	while (iter_count < iter) /*在世代iter次數尚未達標前*/
 	{
 		/*每一世代重新設定初始狀態*/
-		/*dynamic eva_rate*/
+		/*adaptive eva_rate*/
 		eva_rate = eva_rate - (eva_rate * 0.85) * ((double)iter_count / iter);
 		recent_dis_record = vector<double>(ants, 0.0);
 		recent_path_record = vector<vector<int>>(ants, vector<int>(city_num, -1));
@@ -70,7 +71,7 @@ void algo_ACO::RunALG(const int& _iter,
 	}
 
 	/*create dis_result.txt*/
-	ofstream file("dis_result_TSP_ACO_total" + to_string(iter) + "iter_evaporate" + to_string(static_cast<int>(eva_rate * 10)) + "_pher" + to_string(weight_pher) + "_heu" + to_string(weight_heu) + ".txt");
+	ofstream file("dis_result_TSP_ACO_total" + to_string(iter) + "iter_evaporate" + to_string(org_eva_rate) + "_pher" + to_string(weight_pher) + "_heu" + to_string(weight_heu) + ".txt");
 	for (int i = 0; i < iter; ++i)
 	{
 		file << i + 1 << " " << all_iter_shortest_dis[i] << "\n";
@@ -80,17 +81,17 @@ void algo_ACO::RunALG(const int& _iter,
 	/*create .plt for generating plot*/
 	ofstream plot("plot_ACO_dis.plt");
 	plot << "set terminal png size 800, 600\n";
-	plot << "set output 'dis_result_TSP_ACO_total" << iter << "iter_evaporate" << static_cast<int>(eva_rate * 10) << "_pher" << weight_pher << "_heu" << weight_heu << ".png'\n";
+	plot << "set output 'dis_result_TSP_ACO_total" << iter << "iter_evaporate" << org_eva_rate << "_pher" << weight_pher << "_heu" << weight_heu << ".png'\n";
 	plot << "set title 'Convergence with ACO on TravelSalesMan'\n";
 	plot << "set xlabel 'Iteration Times'\n";
 	plot << "set ylabel 'Shortest Distance'\n";
 	plot << "set xrange [0:" << iter << "]\n";
 	plot << "set yrange [0:600]\n";
-	plot << "plot 'dis_result_TSP_ACO_total" << iter << "iter_evaporate" << static_cast<int>(eva_rate * 10) << "_pher" << weight_pher << "_heu" << weight_heu << ".txt' using 1:2 with lines title 'with ACO'";
+	plot << "plot 'dis_result_TSP_ACO_total" << iter << "iter_evaporate" << org_eva_rate << "_pher" << weight_pher << "_heu" << weight_heu << ".txt' using 1:2 with lines title 'with ACO'";
 	plot.close();
 
 	/*create path_result.txt*/
-	ofstream file_path("path_result_TSP_ACO_total" + to_string(iter) + "iter_evaporate" + to_string(static_cast<int>(eva_rate*10)) + "_pher" + to_string(weight_pher) + "_heu" + to_string(weight_heu) + ".txt");
+	ofstream file_path("path_result_TSP_ACO_total" + to_string(iter) + "iter_evaporate" + to_string(org_eva_rate) + "_pher" + to_string(weight_pher) + "_heu" + to_string(weight_heu) + ".txt");
 	for (int city : shortest_path)
 	{
 		int x = city_coordinates[city].first;
@@ -105,7 +106,7 @@ void algo_ACO::RunALG(const int& _iter,
 	/*create .plt for generating plot*/
 	ofstream plot_path("plot_ACO_path.plt");
 	plot_path << "set terminal png size 800, 600\n";
-	plot_path << "set output 'path_result_TSP_ACO_total" << iter << "iter_evaporate" << static_cast<int>(eva_rate * 10) << "_pher" << weight_pher << "_heu" << weight_heu << ".png'\n";
+	plot_path << "set output 'path_result_TSP_ACO_total" << iter << "iter_evaporate" << org_eva_rate << "_pher" << weight_pher << "_heu" << weight_heu << ".png'\n";
 	plot_path << "set title 'TravelSalesMan Shortest Path with ACO'\n";
 	plot_path << "set label 'Distance = " << shortest_dis << "' at graph 0.35, 0.95 tc rgb 'black' front\n";
 	plot_path << "set size square\n";
@@ -113,7 +114,7 @@ void algo_ACO::RunALG(const int& _iter,
 	plot_path << "set yrange [0:80]\n";
 	plot_path << "set key off\n";
 	plot_path << "set grid\n";
-	plot_path << "plot 'path_result_TSP_ACO_total" << iter << "iter_evaporate" << static_cast<int>(eva_rate * 10) << "_pher" << weight_pher << "_heu" << weight_heu << ".txt' with linespoints lt rgb 'purple' pt 7 ps 1.2\n";
+	plot_path << "plot 'path_result_TSP_ACO_total" << iter << "iter_evaporate" << org_eva_rate << "_pher" << weight_pher << "_heu" << weight_heu << ".txt' with linespoints lt rgb 'purple' pt 7 ps 1.2\n";
 	plot_path.close();
 }
 
