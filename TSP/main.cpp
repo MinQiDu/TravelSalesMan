@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
 	int weight_pher = atoi(argv[3]);
 	int weight_heu = atoi(argv[4]);
 
+
 	algo_ACO algo;
 	algo.RunALG(iter, eva_rate, weight_pher, weight_heu);
 
