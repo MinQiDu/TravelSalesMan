@@ -2,10 +2,10 @@
 
 ## ( I ) Introduction
 
-- Language: C++
-- Metaheuristic algorithm: Ant Colony Optimization (ACO)
-- Benchmark problem: Traveling Salesman Problem (TSP)
-- Supports configurable parameters: iteration times, evaporation rate, pheromone importance, heuristic importance
+- **Programming language:** C++
+- **Metaheuristic algorithm:** Ant Colony Optimization (ACO)
+- **Benchmark problem:** Traveling Salesman Problem (TSP)
+- **Supports configurable parameters:** iteration times, evaporation rate, pheromone importance, heuristic importance
 
 ## ( II ) Main Functionality
 
