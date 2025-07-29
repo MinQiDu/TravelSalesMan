@@ -123,12 +123,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="JADE.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ACO.cpp" />
     <ClCompile Include="TSP.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ACO.h" />
+    <ClInclude Include="JADE.h" />
     <ClInclude Include="TSP.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

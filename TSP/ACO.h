@@ -41,10 +41,10 @@ private :
 	                                                                                     /*While (iter_count < iter_max)*/
 	vector<int> Path_construct(int start_city);                                          /*construct a path visiting all cities*/
 	double Cal_dis(const vector<int> &visited_order);                                    /*calculate total distance of this path*/
-	double Cal_edge(const int& from, const int& to);                                     /*calculate total distance og this edge*/
+	double Cal_edge(const int& from, const int& to);                                     /*calculate total distance of this edge*/
 	vector<int> SelectTopIdx(const vector<double>& recent_dis_record, const int& top_n); /*Select & return top n shortest dis idx*/
 	void Apply_2_Opt(const int &top_n);                                                  /*Apply local search on top n ants*/
-	                                                                                     /*and update shortest_path and shortes_dis*/
+	                                                                                     /*and update shortest_path and shortest_dis*/
 	void Update_pheromones();                                                            /*update pheromones level for next iter*/
 	vector<pair<int, int>> ReadCityCoord(const string& filename);                        /*transfer city_coord.txt -> city_coord vector {{x1, y1}, {x2, y2}, ...}*/
 };
