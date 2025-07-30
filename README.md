@@ -209,7 +209,7 @@ TSP/
 ```
 
 ## ( VII ) Experimental Results
-
+> Parameter Setup: iteration_num = 1000 | pop_size = 60 | city_num = 51
 ### ACO
 <p align="center">
   <img src="results/ACO/(428.872) dis_result_TSP_ACO_total1000iter_pop60_evaporate7_pher1_heu3.png" width="49%"/>
