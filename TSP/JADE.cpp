@@ -29,7 +29,7 @@ void algo_JADE::RunALG(const int& _iter,
 	nfes = 0;
 
 	/* 輸出收斂結果用 */
-	int iter_c = 0; 
+	iter_c = 0; 
 	vector<double> all_iter_shortest_dis;
 
 	/* Initialization */
@@ -236,8 +236,19 @@ vector<vector<double>> algo_JADE::Mutation(vector<double>& CR, vector<double>& F
 {
 	normal_distribution<double> dist_CR(mCR, 0.1); /* 常態分布 for 生成個體的 CR */
 	cauchy_distribution<double> dist_F(mF, 0.1);   /* 柯西分布 for 生成個體的 F */
+	//uniform_int_distribution<int> dist_rdidx(0, dim - 1);/* 均勻分布 for 生成隨機index for swap */
 	vector<vector<double>> _donor_keys_record;
+	//_donor_keys_record = org_keys_record;
 	_donor_keys_record.resize(pop_size);
+
+	/* swap mutation */
+	/*int swap_times = 1;
+	if (iter_c <= 40) swap_times = 30;
+	else if (iter_c <= 100) swap_times == 15;
+	else if (iter_c <= 500) swap_times == 10;
+	else if (iter_c <= 700) swap_times == 5;
+	else if (iter_c <= 800) swap_times == 3;
+	else if (iter_c <= 1000) swap_times == 1;*/
 
 	for (int i = 0; i < pop_size; ++i)
 	{
@@ -252,6 +263,20 @@ vector<vector<double>> algo_JADE::Mutation(vector<double>& CR, vector<double>& F
 			F[i] = dist_F(gen);
 		} while (F[i] <= 0.0 || F[i] > 1.0);       /* truncate */
 
+		/* swap mutation */
+		/*for (int j = 0; j < swap_times; ++j)
+		{
+			int idx1 = dist_rdidx(gen);
+			int idx2;
+
+			do {
+				idx2 = dist_rdidx(gen);
+			} while (idx2 == idx1);
+
+			swap(_donor_keys_record[i][idx1], _donor_keys_record[i][idx2]);
+		}*/
+
+		/* current-to-pbest mutation */
 		/* 選出x_pbest, x_r1, x_r2 來產生 donor_keys_record */
 		/* donor_keys_record[i][j] = x[i][j] + F[i] * (x_pbest[j] - org_keys_record[i][j]) + F[i] * (x_r1[j] - x_r2[j]) */
 		/* x_pbest */

@@ -223,6 +223,13 @@ TSP/
   <img src="results/JADE/path_result_TSP_JADE_total1000iter_pop60_c20_p20.png" width="49%"/>
 </p>
 
+---
+### JADE with swap-based mutation trategy
+<p align="center">
+  <img src="results/JADE/(swap mutation) dis_result_TSP_JADE_total1000iter_pop60_c20_p20.png" width="49%"/>
+  <img src="results/JADE/(swap mutation) path_result_TSP_JADE_total1000iter_pop60_c20_p20.png" width="49%"/>
+</p>
+
 
 ## ( VIII ) Observations
 
@@ -235,27 +242,30 @@ TSP/
 - Applying differential mutation on random-key encoded vectors often results in unstable and erratic permutations due to small numerical shifts causing large order changes.
 - The algorithm frequently stagnates in local optima when using standard current-to-pbest mutation and binomial crossover.
 - Integrating 2-opt post-processing partially mitigates local stagnation, but the global exploration remains weak.
+- **Attempted swap-based mutation (in-place shuffling of random-key vector values) leads to even worse performance, indicating that local mutations in random-key space do not translate effectively into quality permutation improvements.**
 
 ## ( IX ) Key Features
 
-- Configurable metaheuristic parameters (iterations, evaporation, weights)
-- Efficient local search integration via 2-opt
-- City coordinate parsing from file
-- Gnuplot-compatible outputs for result visualization
+- Configurable metaheuristic parameters (iterations, evaporation, weights).
+- Efficient local search integration via 2-opt.
+- City coordinate parsing from file.
+- Gnuplot-compatible outputs for result visualization.
 ---
-- Random-key encoding to bridge continuous DE-based JADE with discrete TSP solution space
-- (incomplete) Custom mutation and crossover design adapted from JADE to support permutation decoding
-- Runtime logging of global best updates per iteration
+- Random-key encoding to bridge continuous DE-based JADE with discrete TSP solution space.
+- Custom mutation and crossover design adapted from JADE to support permutation decoding.
+- Runtime logging of global best updates per iteration.
+- Integration of swap mutation experiments to evaluate its effect on discrete permutation quality.
 
 ## ( X ) Skills Demonstrated
 
-- Metaheuristic algorithm implementation for combinatorial problems
-- Integration of global search (ACO) with local optimization (2-opt)
-- Modular programming and data abstraction in C++
-- Visualization with gnuplot
-- File I/O and structured performance logging
+- Metaheuristic algorithm implementation for combinatorial problems.
+- Integration of global search (ACO) with local optimization (2-opt).
+- Modular programming and data abstraction in C++.
+- Visualization with gnuplot.
+- File I/O and structured performance logging.
 ---
-- Adapting a continuous-space optimizer (JADE) to work with discrete permutation problems via ranking-based encoding
-- Performance analysis and algorithmic tuning based on observation of convergence behavior
-- (incomplete) Debugging complex search-space mapping between continuous vectors and valid TSP permutations
+- Adapting a continuous-space optimizer (JADE) to work with discrete permutation problems via ranking-based encoding.
+- Designing, testing, and evaluating custom mutation strategies for permutation stability.
+- Performance analysis and algorithmic tuning based on convergence behavior and solution structure.
+- Identifying mismatch between optimizer assumptions (continuous space) and problem nature (discrete structure), and proposing structural workarounds.
 

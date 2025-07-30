@@ -17,8 +17,8 @@ public:
 		const double& p);
 
 private:
-	random_device rd;  /*宣告亂數引擎*/
-	mt19937 gen;
+	random_device rd;  /* 隨機亂數種子產生器 */
+	mt19937 gen;       /* 亂數產生器 */
 
 	/* Command-Line arguments */
 	int iter;
@@ -28,6 +28,7 @@ private:
 	double p;
 
 	/* variables */
+	int iter_c;									/* 當前 iter 次數 */
 	int dim;									/* 這邊的維度 = 城市個數 */
 	int pop_size;								/* 一代解個數 */
 	int mnfes;									/* iter * pop_size */
