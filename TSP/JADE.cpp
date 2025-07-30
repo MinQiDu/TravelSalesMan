@@ -99,8 +99,8 @@ void algo_JADE::RunALG(const int& _iter,
 }
 
 /* 1. 用 ReadCityCoord 讀入已知城市座標資訊 */
-/* 3. 用 Cal_edge 計算 city_dis 矩陣 */
-/* 2. 用 KeyConstruct 產生 pop_size 個初始 random keys 形式解 = org_keys_record */
+/* 2. 用 Cal_edge 計算 city_dis 矩陣 */
+/* 3. 用 KeyConstruct 產生 pop_size 個初始 random keys 形式解 = org_keys_record */
 /* 4. 初始化 global/current_shortest_dis/path */
 void algo_JADE::Init()
 {
